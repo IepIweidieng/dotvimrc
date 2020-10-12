@@ -1,4 +1,3 @@
-
 " An example for a vimrc file.
 "
 " Maintainer:   Bram Moolenaar <Bram@vim.org>
@@ -12,7 +11,7 @@
 
 " When started as "evim", evim.vim will already have done these settings.
 if v:progname =~? "evim"
-  finish
+    finish
 endif
 
 let $BASH_ENV = "~/.bash_aliases"
@@ -30,10 +29,10 @@ let g:airline_powerline_fonts=1
 set backspace=indent,eol,start
 
 if has("vms")
-  set nobackup          " do not keep a backup file, use versions instead
+    set nobackup                " do not keep a backup file, use versions instead
 else
-  set backup            " keep a backup file (restore to previous version)
-  set undofile          " keep an undo file (undo changes after closing)
+    set backup          " keep a backup file (restore to previous version)
+    set undofile                " keep an undo file (undo changes after closing)
 endif
 set history=50          " keep 50 lines of command line history
 set ruler               " show the cursor position all the time
@@ -52,52 +51,50 @@ inoremap <C-U> <C-G>u<C-U>
 
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
-  set mouse=a
+    set mouse=a
 endif
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
-  syntax on
-  set hlsearch
+    syntax on
+    set hlsearch
 endif
 
 set termguicolors
 set background=dark
-
-colorscheme gruvbox
 
 set t_ut=
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
-  " Enable file type detection.
-  " Use the default filetype settings, so that mail gets 'tw' set to 72,
-  " 'cindent' is on in C files, etc.
-  " Also load indent files, to automatically do language-dependent indenting.
-  filetype plugin indent on
+    " Enable file type detection.
+    " Use the default filetype settings, so that mail gets 'tw' set to 72,
+    " 'cindent' is on in C files, etc.
+    " Also load indent files, to automatically do language-dependent indenting.
+    filetype plugin indent on
 
-  " Put these in an autocmd group, so that we can delete them easily.
-  augroup vimrcEx
-  au!
+    " Put these in an autocmd group, so that we can delete them easily.
+    augroup vimrcEx
+        au!
 
-  " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=80
+        " For all text files set 'textwidth' to 78 characters.
+        autocmd FileType text setlocal textwidth=80
 
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  autocmd BufReadPost *
-    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
+        " When editing a file, always jump to the last known cursor position.
+        " Don't do it when the position is invalid or when inside an event handler
+        " (happens when dropping a file on gvim).
+        autocmd BufReadPost *
+                    \ if line("'\"") >= 1 && line("'\"") <= line("$") |
+                    \   exe "normal! g`\"" |
+                    \ endif
 
-  augroup END
+    augroup END
 
 else
 
-  set autoindent                " always set autoindenting on
+    set autoindent              " always set autoindenting on
 
 endif " has("autocmd")
 
@@ -105,23 +102,66 @@ endif " has("autocmd")
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
 if !exists(":DiffOrig")
-  command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
-    \ | wincmd p | diffthis
+    command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
+                \ | wincmd p | diffthis
 endif
 
 if has('langmap') && exists('+langnoremap')
-  " Prevent that the langmap option applies to characters that result from a
-  " mapping.  If unset (default), this may break plugins (but it's backward
-  " compatible).
-  set langnoremap
+    " Prevent that the langmap option applies to characters that result from a
+    " mapping.  If unset (default), this may break plugins (but it's backward
+    " compatible).
+    set langnoremap
 endif
 
 
-" Add optional packages.
-"
+" Plugins
+
+" Install vim-plug if not found
+if empty(glob('~/.vim/autoload/plug.vim'))
+    silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+                \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+endif
+
+" Helper function for determining whether to load the plugin depending on the condition
+function! PlugCond(cond, ...)
+    let opts = get(a:000, 0, {})
+    return a:cond ? opts : extend(opts, { 'on': [], 'for': [] })
+endfunction
+
+call plug#begin('~/.vim/plugged')
+
+" Register vim-plug as a plugin for Vim help (e.g. :help plug-options).
+Plug 'junegunn/vim-plug'
+
+" Retro groove color scheme for Vim
+Plug 'morhetz/gruvbox'
+
+" lean & mean status/tabline for vim that's light as air
+Plug 'vim-airline/vim-airline'
+
+" fugitive.vim: A Git wrapper so awesome, it should be illegal
+Plug 'tpope/vim-fugitive'
+
+" hexokinase.vim - The fastest (Neo)Vim plugin for asynchronously displaying
+" the colours in the file (#rrggbb, #rgb, rgb(a)? functions, hsl(a)?
+" functions, web colours, custom patterns)
+Plug 'rrethy/vim-hexokinase', PlugCond(has('nvim-0.3.0'), { 'do': 'make hexokinase' })
+
+" Improved AnsiEsc.vim: ansi escape sequences concealed, but highlighted as specified (conceal)
+Plug 'powerman/vim-plugin-AnsiEsc'
+
+call plug#end()
+
+" Run PlugInstall if there are missing plugins
+if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 " The matchit plugin makes the % command work better, but it is not backwards
 " compatible.
-packadd matchit
+packadd! matchit
+
+colorscheme gruvbox
 
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
@@ -129,9 +169,9 @@ endif
 let g:airline_symbols.space = "\ua0"
 let g:bufferline_echo = 0
 
-let g:colorizer_auto_color = 1
-let g:colorizer_auto_filetype='css,html,h,c,cpp'
-let g:colorizer_syntax = 1
+if !has('nvim')
+    let g:Hexokinase_highlighters = [ 'foreground' ]
+endif
 
 set ttimeoutlen=10
 set ambiwidth=single
@@ -147,13 +187,13 @@ set expandtab
 " tabs to spaces if what = 1, or from spaces to tabs otherwise.
 " When converting to tabs, result has no redundant spaces.
 function! Indenting(indent, what, cols)
-  let spccol = repeat(' ', a:cols)
-  let result = substitute(a:indent, spccol, '\t', 'g')
-  let result = substitute(result, ' \+\ze\t', '', 'g')
-  if a:what == 1
-    let result = substitute(result, '\t', spccol, 'g')
-  endif
-  return result
+    let spccol = repeat(' ', a:cols)
+    let result = substitute(a:indent, spccol, '\t', 'g')
+    let result = substitute(result, ' \+\ze\t', '', 'g')
+    if a:what == 1
+        let result = substitute(result, '\t', spccol, 'g')
+    endif
+    return result
 endfunction
 
 " Convert whitespace used for indenting (before first non-whitespace).
@@ -162,11 +202,11 @@ endfunction
 " The cursor position is restored, but the cursor will be in a different
 " column when the number of characters in the indent of the line is changed.
 function! IndentConvert(line1, line2, what, cols)
-  let savepos = getpos('.')
-  let cols = empty(a:cols) ? &tabstop : a:cols
-  execute a:line1 . ',' . a:line2 . 's/^\s\+/\=Indenting(submatch(0), a:what, cols)/e'
-  call histdel('search', -1)
-  call setpos('.', savepos)
+    let savepos = getpos('.')
+    let cols = empty(a:cols) ? &tabstop : a:cols
+    execute a:line1 . ',' . a:line2 . 's/^\s\+/\=Indenting(submatch(0), a:what, cols)/e'
+    call histdel('search', -1)
+    call setpos('.', savepos)
 endfunction
 command! -nargs=? -range=% Space2Tab call IndentConvert(<line1>,<line2>,0,<q-args>)
 command! -nargs=? -range=% Tab2Space call IndentConvert(<line1>,<line2>,1,<q-args>)
