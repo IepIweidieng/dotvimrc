@@ -23,8 +23,6 @@ set nocompatible
 set noshowmode
 set laststatus=2
 
-let g:airline_powerline_fonts=1
-
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
@@ -162,6 +160,8 @@ endif
 packadd! matchit
 
 colorscheme gruvbox
+
+let g:airline_powerline_fonts=0
 
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
