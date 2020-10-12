@@ -143,7 +143,8 @@ Plug 'tpope/vim-fugitive'
 " hexokinase.vim - The fastest (Neo)Vim plugin for asynchronously displaying
 " the colours in the file (#rrggbb, #rgb, rgb(a)? functions, hsl(a)?
 " functions, web colours, custom patterns)
-Plug 'rrethy/vim-hexokinase', PlugCond(has('nvim-0.3.0'), { 'do': 'make hexokinase' })
+let has_chanclose = !has('nvim') || has('nvim-0.3.0')
+Plug 'rrethy/vim-hexokinase', PlugCond(has_chanclose, { 'do': 'make hexokinase' })
 
 " Improved AnsiEsc.vim: ansi escape sequences concealed, but highlighted as specified (conceal)
 Plug 'powerman/vim-plugin-AnsiEsc'
