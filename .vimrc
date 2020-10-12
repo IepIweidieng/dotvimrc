@@ -121,9 +121,7 @@ endif
 "
 " The matchit plugin makes the % command work better, but it is not backwards
 " compatible.
-if !has('nvim')
-    packadd matchit
-endif
+packadd matchit
 
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
