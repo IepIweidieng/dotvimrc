@@ -26,7 +26,7 @@ set laststatus=2
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
-if has("vms")
+if has('vms')
     set nobackup		" do not keep a backup file, use versions instead
 else
     set backup		" keep a backup file (restore to previous version)
@@ -38,7 +38,9 @@ set showcmd		" display incomplete commands
 set incsearch		" do incremental searching
 
 " For Win32 GUI: remove 't' flag from 'guioptions': no tearoff menu entries
-" let &guioptions = substitute(&guioptions, "t", "", "g")
+if has('win32')
+    let &guioptions = substitute(&guioptions, 't', '', 'g')
+endif
 
 " Don't use Ex mode, use Q for formatting
 map Q gq
@@ -52,20 +54,8 @@ if has('mouse')
     set mouse=a
 endif
 
-" Switch syntax highlighting on, when the terminal has colors
-" Also switch on highlighting the last used search pattern.
-if &t_Co > 2 || has("gui_running")
-    syntax on
-    set hlsearch
-endif
-
-set termguicolors
-set background=dark
-
-set t_ut=
-
 " Only do this part when compiled with support for autocommands.
-if has("autocmd")
+if has('autocmd')
 
     " Enable file type detection.
     " Use the default filetype settings, so that mail gets 'tw' set to 72,
@@ -94,12 +84,12 @@ else
 
     set autoindent		" always set autoindenting on
 
-endif " has("autocmd")
+endif " has('autocmd')
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
-if !exists(":DiffOrig")
+if !exists(':DiffOrig')
     command DiffOrig vert new | set bt=nofile | r ++edit # | 0d_ | diffthis
                 \ | wincmd p | diffthis
 endif
@@ -143,8 +133,8 @@ Plug 'tpope/vim-fugitive'
 " hexokinase.vim - The fastest (Neo)Vim plugin for asynchronously displaying
 " the colours in the file (#rrggbb, #rgb, rgb(a)? functions, hsl(a)?
 " functions, web colours, custom patterns)
-let has_chanclose = !has('nvim') || has('nvim-0.3.0')
-Plug 'rrethy/vim-hexokinase', PlugCond(has_chanclose, { 'do': 'make hexokinase' })
+let has_func_chanclose = !has('nvim') || has('nvim-0.3.0')
+Plug 'rrethy/vim-hexokinase', PlugCond(has_func_chanclose, { 'do': 'make hexokinase' })
 
 " Improved AnsiEsc.vim: ansi escape sequences concealed, but highlighted as specified (conceal)
 Plug 'powerman/vim-plugin-AnsiEsc'
@@ -160,9 +150,26 @@ endif
 " compatible.
 silent! packadd! matchit
 
+" Configurate the color scheme
+
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if &t_Co > 2 || has('gui_running')
+    syntax on
+    set hlsearch
+endif
+
+set termguicolors
+set background=dark
+
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_improved_strings = 1
+let g:gruvbox_improved_warnings = 1
 colorscheme gruvbox
 
-let g:airline_powerline_fonts=0
+" Configurate the other plugins
+
+let g:airline_powerline_fonts = 0
 
 if !exists('g:airline_symbols')
     let g:airline_symbols = {}
@@ -170,9 +177,15 @@ endif
 let g:airline_symbols.space = "\ua0"
 let g:bufferline_echo = 0
 
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#show_splits = 1
+let g:airline#extensions#tabline#show_buffers = 1
+let g:airline#extensions#tabline#show_tabs = 1
+
 if !has('nvim')
     let g:Hexokinase_highlighters = [ 'foreground' ]
 endif
+let g:Hexokinase_refreshEvents = ['TextChanged', 'InsertLeave']
 
 set ttimeoutlen=10
 set ambiwidth=single
@@ -209,8 +222,8 @@ function! IndentConvert(line1, line2, what, cols)
     call histdel('search', -1)
     call setpos('.', savepos)
 endfunction
-command! -nargs=? -range=% Space2Tab call IndentConvert(<line1>,<line2>,0,<q-args>)
-command! -nargs=? -range=% Tab2Space call IndentConvert(<line1>,<line2>,1,<q-args>)
-command! -nargs=? -range=% RetabIndent call IndentConvert(<line1>,<line2>,&et,<q-args>)
+command! -nargs=? -range=% Space2Tab call IndentConvert(<line1>, <line2>, 0, <q-args>)
+command! -nargs=? -range=% Tab2Space call IndentConvert(<line1>, <line2>, 1, <q-args>)
+command! -nargs=? -range=% RetabIndent call IndentConvert(<line1>, <line2>, &et, <q-args>)
 
 set listchars=tab:>.,trail:~,extends:>,precedes:<
