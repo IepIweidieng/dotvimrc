@@ -75,7 +75,7 @@ if has('autocmd')
         " (happens when dropping a file on gvim).
         autocmd BufReadPost *
                     \ if line("'\"") >= 1 && line("'\"") <= line("$") |
-                    \   exe "normal! g`\"" |
+                    \   exe 'normal! g`"' |
                     \ endif
 
     augroup END
@@ -84,7 +84,7 @@ else
 
     set autoindent		" always set autoindenting on
 
-endif " has('autocmd')
+endif " has("autocmd")
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
@@ -192,7 +192,7 @@ set ambiwidth=single
 
 set number
 
-set tabstop=4
+set tabstop=8
 set softtabstop=2
 set shiftwidth=4
 set expandtab
@@ -227,3 +227,4 @@ command! -nargs=? -range=% Tab2Space call IndentConvert(<line1>, <line2>, 1, <q-
 command! -nargs=? -range=% RetabIndent call IndentConvert(<line1>, <line2>, &et, <q-args>)
 
 set listchars=tab:>.,trail:~,extends:>,precedes:<
+set list
