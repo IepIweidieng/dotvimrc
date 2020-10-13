@@ -188,7 +188,7 @@ endif
 let g:Hexokinase_refreshEvents = ['TextChanged', 'InsertLeave']
 
 set ttimeoutlen=10
-set ambiwidth=single
+set ambiwidth=double
 
 set number
 
