@@ -228,3 +228,5 @@ command! -nargs=? -range=% RetabIndent call IndentConvert(<line1>, <line2>, &et,
 
 set listchars=tab:>.,trail:~,extends:>,precedes:<
 set list
+
+set fileencodings=ucs-bom,utf-8,default,big5,latin1
