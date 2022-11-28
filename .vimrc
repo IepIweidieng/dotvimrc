@@ -29,10 +29,10 @@ set backspace=indent,eol,start
 if has('vms')
     set nobackup		" do not keep a backup file, use versions instead
 else
-    set backup		" keep a backup file (restore to previous version)
+    set nobackup		" keep a backup file (restore to previous version)
     set undofile		" keep an undo file (undo changes after closing)
 endif
-set history=50		" keep 50 lines of command line history
+set history=128		" keep 128 lines of command line history
 set ruler		" show the cursor position all the time
 set showcmd		" display incomplete commands
 set incsearch		" do incremental searching
@@ -41,9 +41,6 @@ set incsearch		" do incremental searching
 if has('win32')
     let &guioptions = substitute(&guioptions, 't', '', 'g')
 endif
-
-" Don't use Ex mode, use Q for formatting
-map Q gq
 
 " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
@@ -130,6 +127,9 @@ Plug 'vim-airline/vim-airline'
 " fugitive.vim: A Git wrapper so awesome, it should be illegal
 Plug 'tpope/vim-fugitive'
 
+" dispatch.vim: Asynchronous build and test dispatcher
+Plug 'tpope/vim-dispatch'
+
 " hexokinase.vim - The fastest (Neo)Vim plugin for asynchronously displaying
 " the colours in the file (#rrggbb, #rgb, rgb(a)? functions, hsl(a)?
 " functions, web colours, custom patterns)
@@ -191,42 +191,11 @@ set ttimeoutlen=10
 set ambiwidth=double
 
 set number
+set cursorline
 
 set tabstop=8
-set softtabstop=2
-set shiftwidth=4
-set expandtab
+set expandtab smarttab shiftwidth=4 softtabstop=2 smartindent
 
-" Return indent (all whitespace at start of a line), converted from
-" tabs to spaces if what = 1, or from spaces to tabs otherwise.
-" When converting to tabs, result has no redundant spaces.
-function! Indenting(indent, what, cols)
-    let spccol = repeat(' ', a:cols)
-    let result = substitute(a:indent, spccol, '\t', 'g')
-    let result = substitute(result, ' \+\ze\t', '', 'g')
-    if a:what == 1
-        let result = substitute(result, '\t', spccol, 'g')
-    endif
-    return result
-endfunction
-
-" Convert whitespace used for indenting (before first non-whitespace).
-" what = 0 (convert spaces to tabs), or 1 (convert tabs to spaces).
-" cols = string with number of columns per tab, or empty to use 'tabstop'.
-" The cursor position is restored, but the cursor will be in a different
-" column when the number of characters in the indent of the line is changed.
-function! IndentConvert(line1, line2, what, cols)
-    let savepos = getpos('.')
-    let cols = empty(a:cols) ? &tabstop : a:cols
-    execute a:line1 . ',' . a:line2 . 's/^\s\+/\=Indenting(submatch(0), a:what, cols)/e'
-    call histdel('search', -1)
-    call setpos('.', savepos)
-endfunction
-command! -nargs=? -range=% Space2Tab call IndentConvert(<line1>, <line2>, 0, <q-args>)
-command! -nargs=? -range=% Tab2Space call IndentConvert(<line1>, <line2>, 1, <q-args>)
-command! -nargs=? -range=% RetabIndent call IndentConvert(<line1>, <line2>, &et, <q-args>)
-
-set listchars=tab:>.,trail:~,extends:>,precedes:<
-set list
+set list listchars=tab:>.,trail:~,extends:>,precedes:<
 
 set fileencodings=ucs-bom,utf-8,default,big5,latin1
